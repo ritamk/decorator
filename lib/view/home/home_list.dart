@@ -5,7 +5,11 @@ import 'package:decorator/model/order_model.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
+import 'package:decorator/view/home/edit_order.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeList extends StatefulWidget {
   const HomeList({Key? key}) : super(key: key);
@@ -16,6 +20,10 @@ class HomeList extends StatefulWidget {
 
 class _HomeListState extends State<HomeList> {
   bool _loadingUserData = true;
+  bool _loading = true;
+  bool _error = false;
+
+  List<OrderModel> _orderList = <OrderModel>[];
 
   @override
   void initState() {
@@ -28,51 +36,105 @@ class _HomeListState extends State<HomeList> {
           if (!mounted) return;
           commonSnackbar("Could not load user data", context);
         },
-      ).then((value) => setState(() => _loadingUserData = false));
+      ).whenComplete(() => setState(() => _loadingUserData = false));
+    }
+    loadOrderData().whenComplete(() => setState(() => _loading = false));
+  }
+
+  Future<void> loadOrderData() async {
+    try {
+      await DatabaseController(uid: UserSharedPreferences.getUid())
+          .getOrderData()
+          .then((value) => value != null
+              ? _orderList = value
+              : setState(() => _error = true));
+    } catch (e) {
+      try {
+        await DatabaseController(uid: UserSharedPreferences.getUid())
+            .getOrderData()
+            .then((value) => value != null
+                ? _orderList = value
+                : setState(() => _error = true));
+      } catch (e) {
+        setState(() => _error = true);
+      }
+    }
+  }
+
+  void call(String num) {
+    try {
+      launchUrl(Uri(scheme: "tel", path: "+91$num"));
+    } catch (e) {
+      ClipboardData(text: "+91$num");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: pagePadding,
-      child: !_loadingUserData
-          ? StreamBuilder<List<OrderModel>?>(
-              stream: DatabaseController(uid: UserSharedPreferences.getUid())
-                  .getOrderData(),
-              initialData: const [],
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.isNotEmpty) {
-                    return ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final OrderModel order = snapshot.data[index];
-
-                        return ListTile(
-                          title: Text(order.cltName!),
-                        );
-                      },
-                      physics: bouncingScroll,
-                    );
-                  } else {
-                    return Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const <Widget>[
-                          Icon(Icons.cancel, color: buttonCol),
-                          SizedBox(width: 10.0),
-                          Text("No incomplete orders"),
-                        ],
-                      ),
-                    );
-                  }
-                } else {
-                  return const Center(child: Loading(white: false, rad: 14.0));
-                }
-              },
-            )
-          : const Center(child: Loading(white: false, rad: 14.0)),
+    return CustomScrollView(
+      physics: bouncingScroll,
+      slivers: <Widget>[
+        CupertinoSliverRefreshControl(
+          onRefresh: () async => await loadOrderData(),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: pagePadding,
+            child: !_loading && !_loadingUserData
+                ? !_error
+                    ? ListView.builder(
+                        primary: false,
+                        shrinkWrap: true,
+                        itemCount: _orderList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0)),
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(CupertinoPageRoute(
+                                    builder: (context) => EditOrderPage(
+                                        order: _orderList[index])));
+                              },
+                              title: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(_orderList[index].cltName!,
+                                      style: const TextStyle(fontSize: 20.0)),
+                                  const SizedBox(width: 10.0),
+                                  Tooltip(
+                                    message: "Call client",
+                                    child: InkWell(
+                                      child: Icon(
+                                        Icons.phone,
+                                        color: Colors.green.shade600,
+                                      ),
+                                      onTap: () =>
+                                          call(_orderList[index].cltPhone!),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Text("₹ ${_orderList[index].amount!}"),
+                            ),
+                          );
+                        },
+                        clipBehavior: Clip.none,
+                      )
+                    : Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Icons.cancel, color: buttonCol),
+                            SizedBox(width: 10.0),
+                            Text("No incomplete orders"),
+                          ],
+                        ),
+                      )
+                : const Center(child: Loading(white: false, rad: 14.0)),
+          ),
+        ),
+      ],
     );
   }
 
@@ -90,7 +152,6 @@ class _HomeListState extends State<HomeList> {
         final EmployeeModel? employeeModel =
             await DatabaseController(uid: UserSharedPreferences.getUid())
                 .getEmployeeData();
-
         if (employeeModel != null) {
           UserSharedPreferences.setDetailedUserData(employeeModel);
         }

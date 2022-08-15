@@ -1,5 +1,4 @@
 import 'package:decorator/shared/constants.dart';
-import 'package:decorator/shared/loading.dart';
 import 'package:decorator/view/home/add_order_page.dart';
 import 'package:decorator/view/home/home_drawer.dart';
 import 'package:decorator/view/home/home_list.dart';
@@ -19,6 +18,7 @@ class HomePage extends StatelessWidget {
       body: const HomeList(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
+        tooltip: "Add Request",
         backgroundColor: buttonCol,
         foregroundColor: buttonTextCol,
         onPressed: () {

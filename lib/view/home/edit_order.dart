@@ -9,19 +9,22 @@ import 'package:decorator/shared/widget_des.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AddOrderPage extends StatefulWidget {
-  const AddOrderPage({Key? key}) : super(key: key);
+class EditOrderPage extends StatefulWidget {
+  const EditOrderPage({Key? key, required this.order}) : super(key: key);
+  final OrderModel order;
 
   @override
-  State<AddOrderPage> createState() => _AddOrderPageState();
+  State<EditOrderPage> createState() => _EditOrderPageState();
 }
 
-class _AddOrderPageState extends State<AddOrderPage> {
-  bool _loading = true;
+class _EditOrderPageState extends State<EditOrderPage> {
+  late OrderModel _order;
+
+  bool _loading = false;
   bool _error = false;
-  bool _itemsSelected = false;
+  bool _itemsSelected = true;
   bool _buttonLoading = false;
-  bool _amountCalc = false;
+  bool _amountCalc = true;
 
   final ScrollController _controller = ScrollController();
 
@@ -49,10 +52,15 @@ class _AddOrderPageState extends State<AddOrderPage> {
   @override
   void initState() {
     super.initState();
-    _nameController.text =
-        UserSharedPreferences.getDetailedUseData()?.name ?? "";
-    _phoneController.text =
-        UserSharedPreferences.getDetailedUseData()?.phone ?? "";
+    _order = widget.order;
+    _nameController.text = _order.empName ?? "";
+    _phoneController.text = _order.empPhone ?? "";
+    _cltNameController.text = _order.cltName ?? "";
+    _cltPhoneController.text = _order.cltPhone ?? "";
+    _cltAddressController.text = _order.cltAddress ?? "";
+    _selectedItems = _order.item?.keys.toList() ?? [];
+    _selectedItemCount = _order.item?.values.toList().cast<int>() ?? <int>[];
+    _grandTotal = int.parse(_order.amount ?? "0");
     loadCount(() {
       if (!mounted) return;
       commonSnackbar("Failed to load item counts", context);
@@ -63,7 +71,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Order"),
+        title: const Text("Edit Order"),
       ),
       body: !_error
           ? !_loading

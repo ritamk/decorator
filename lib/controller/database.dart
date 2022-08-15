@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decorator/model/employee_model.dart';
 import 'package:decorator/model/order_model.dart';
@@ -76,29 +78,28 @@ class DatabaseController {
     }
   }
 
-  Stream<List<OrderModel>?> getOrderData() {
+  Future<List<OrderModel>?> getOrderData() async {
     try {
-      return _orderCollection
-          .where("uid", isEqualTo: uid)
-          .snapshots()
-          .map((event) => event.docs
-              .map(
-                (QueryDocumentSnapshot e) => OrderModel(
-                  uid: e["uid"],
-                  empName: e["empName"],
-                  empPhone: e["empPhone"],
-                  orderDate: e["orderDate"],
-                  dueDate: e["dueDate"],
-                  approveDate: e["approveDate"],
-                  amount: e["amount"],
-                  cltName: e["cltName"],
-                  cltAddress: e["cltAddress"],
-                  cltPhone: e["cltPhone"],
-                  item: e["item"],
-                  status: e["status"],
-                ),
-              )
-              .toList());
+      final QuerySnapshot docSnap =
+          await _orderCollection.where("uid", isEqualTo: uid).get();
+      return docSnap.docs
+          .map(
+            (QueryDocumentSnapshot e) => OrderModel(
+              uid: e["uid"],
+              empName: e["empName"],
+              empPhone: e["empPhone"],
+              orderDate: e["orderDate"],
+              dueDate: e["dueDate"],
+              approveDate: e["approveDate"],
+              amount: e["amount"],
+              cltName: e["cltName"],
+              cltAddress: e["cltAddress"],
+              cltPhone: e["cltPhone"],
+              item: e["item"],
+              status: e["status"],
+            ),
+          )
+          .toList();
     } catch (e) {
       print("getOrderData: ${e.toString()}");
       throw STH_WENT_WRONG;
@@ -150,3 +151,23 @@ class DatabaseController {
     }
   }
 }
+
+
+/*
+.map(
+                (QueryDocumentSnapshot e) => OrderModel(
+                  uid: e["uid"],
+                  empName: e["empName"],
+                  empPhone: e["empPhone"],
+                  orderDate: e["orderDate"],
+                  dueDate: e["dueDate"],
+                  approveDate: e["approveDate"],
+                  amount: e["amount"],
+                  cltName: e["cltName"],
+                  cltAddress: e["cltAddress"],
+                  cltPhone: e["cltPhone"],
+                  item: e["item"],
+                  status: e["status"],
+                ),
+              )
+*/

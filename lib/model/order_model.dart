@@ -7,7 +7,7 @@ class OrderModel {
   final String? cltName;
   final String? cltPhone;
   final String? cltAddress;
-  final Map<String, int>? item;
+  final Map<String, dynamic>? item;
   final Timestamp? dueDate;
   final Timestamp? orderDate;
   final Timestamp? approveDate;

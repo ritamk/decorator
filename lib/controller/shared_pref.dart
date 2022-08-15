@@ -31,7 +31,7 @@ class UserSharedPreferences {
     try {
       String? user = sharedPreferences!.getString(_uidKey);
       return user != null
-          ? user == "noUser"
+          ? user == ""
               ? null
               : user
           : null;
@@ -54,6 +54,7 @@ class UserSharedPreferences {
       final String? data = sharedPreferences!.getString(_userDetailKey);
       if (data != null) {
         final Map<String, dynamic> decoded = jsonDecode(data);
+        if (decoded["name"] == null) return null;
         return EmployeeModel(
           name: decoded["name"],
           email: decoded["email"],
