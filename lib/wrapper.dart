@@ -2,6 +2,7 @@ import 'package:decorator/controller/auth.dart';
 import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
+import 'package:decorator/shared/snackbar.dart';
 import 'package:decorator/view/auth/auth_page.dart';
 import 'package:decorator/view/home/home_page.dart';
 import 'package:flutter/material.dart';
@@ -15,23 +16,14 @@ class Wrapper extends ConsumerStatefulWidget {
 }
 
 class _WrapperState extends ConsumerState<Wrapper> {
-  late bool verified;
-  String? user;
   bool timeOut = false;
+  late String? uid;
+  late bool loggedIn;
   @override
   void initState() {
     super.initState();
-    if (UserSharedPreferences.getUser() != null) {
-      user = UserSharedPreferences.getUser();
-    } else {
-      user = null;
-    }
-    if (UserSharedPreferences.getVerifiedOrNot() != null) {
-      verified = UserSharedPreferences.getVerifiedOrNot()!;
-    } else {
-      verified = false;
-      UserSharedPreferences.setVerifiedOrNot(verified);
-    }
+    uid = UserSharedPreferences.getUid();
+    loggedIn = UserSharedPreferences.getLoggedIn();
     Future.delayed(const Duration(seconds: 2))
         .then((value) => setState(() => timeOut = true));
   }
@@ -39,8 +31,8 @@ class _WrapperState extends ConsumerState<Wrapper> {
   @override
   Widget build(BuildContext context) {
     if (timeOut) {
-      if (user != null) {
-        if (verified) {
+      if (uid != null) {
+        if (loggedIn) {
           return const HomePage();
         } else {
           return const AuthPage();
@@ -52,8 +44,11 @@ class _WrapperState extends ConsumerState<Wrapper> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data == "") {
               if (snapshot.data != null) {
-                setUser(snapshot.data);
-                if (verified) {
+                setUser(snapshot.data, () {
+                  if (!mounted) return;
+                  commonSnackbar(STH_WENT_WRONG, context);
+                });
+                if (loggedIn) {
                   return const HomePage();
                 } else {
                   return const AuthPage();
@@ -72,8 +67,9 @@ class _WrapperState extends ConsumerState<Wrapper> {
     }
   }
 
-  Future setUser(String uid) async {
-    await UserSharedPreferences.setUser(uid);
+  Future setUser(String uid, VoidCallback snackbar) async {
+    await UserSharedPreferences.setUid(uid)
+        .then((value) => value ? null : snackbar.call());
   }
 }
 

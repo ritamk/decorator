@@ -100,13 +100,19 @@ class _SignInPageState extends State<SignInPage> {
                 // sign in button
                 TextButton(
                   style: authSignInBtnStyle(),
-                  onPressed: () => signInLogic(() {
-                    if (!mounted) return;
-                    Navigator.of(context).pushAndRemoveUntil(
-                        CupertinoPageRoute(
-                            builder: (context) => const HomePage()),
-                        (route) => false);
-                  }),
+                  onPressed: () => signInLogic(
+                    () {
+                      if (!mounted) return;
+                      Navigator.of(context).pushAndRemoveUntil(
+                          CupertinoPageRoute(
+                              builder: (context) => const HomePage()),
+                          (route) => false);
+                    },
+                    () {
+                      if (!mounted) return;
+                      commonSnackbar(STH_WENT_WRONG, context);
+                    },
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: loading
@@ -135,22 +141,25 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
-  Future<void> signInLogic(VoidCallback route) async {
+  Future<void> signInLogic(VoidCallback route, VoidCallback snackbar) async {
     if (_formKey.currentState!.validate()) {
       setState(() => loading = true);
-      dynamic result =
-          await AuthenticationController().signInWithMailPass(mail, pass);
-      if (result != STH_WENT_WRONG) {
-        await UserSharedPreferences.setUser(result);
-        loading = false;
-        route.call();
-      } else {
-        setState(() {
+      try {
+        dynamic result =
+            await AuthenticationController().signInWithMailPass(mail, pass);
+        if (result != STH_WENT_WRONG) {
+          await UserSharedPreferences.setUid(result)
+              .then((value) => value ? null : snackbar.call());
+          await UserSharedPreferences.setLoggedIn(true)
+              .then((value) => value ? null : snackbar.call());
           loading = false;
-          commonSnackbar(
-              "Couldn't sign-in, please try again.\nPlease check credentials and network connection.",
-              context);
-        });
+          route.call();
+        } else {
+          setState(() => loading = false);
+          snackbar.call();
+        }
+      } catch (e) {
+        snackbar.call();
       }
     }
   }

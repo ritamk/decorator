@@ -2,6 +2,7 @@ import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/view/home/add_order_page.dart';
 import 'package:decorator/view/home/home_drawer.dart';
+import 'package:decorator/view/home/home_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home"),
       ),
-      body: const Center(child: Loading(white: false, rad: 14.0)),
+      body: const HomeList(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: buttonCol,

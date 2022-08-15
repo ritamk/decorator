@@ -13,8 +13,22 @@ const List<String> ITEMS = <String>[
   "Balloon",
 ];
 
+const List<String> STATUSES = <String>[
+  "Pending",
+  "Ongoing",
+  "Approved",
+  "Edited",
+  "Edit Requested",
+  "Rejected",
+];
+
 const Text decoratorText = Text("DECORATOR'S",
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26.0));
+
+const ScrollPhysics bouncingScroll =
+    BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
+
+const EdgeInsetsGeometry pagePadding = EdgeInsets.all(24.0);
 
 const Color buttonCol = Color.fromARGB(255, 55, 55, 55);
 const Color buttonTextCol = Color.fromARGB(255, 255, 255, 255);

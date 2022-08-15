@@ -163,18 +163,22 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> signUpLogic(VoidCallback route, VoidCallback snackbar) async {
     if (_globalKey.currentState!.validate()) {
-      setState(() {
-        loading = true;
-      });
-      dynamic result = await AuthenticationController()
-          .registerWithMailPass(name, phone, mail, pass);
-      if (result != null) {
-        await UserSharedPreferences.setUser(result);
-        await UserSharedPreferences.setVerifiedOrNot(true);
-        loading = false;
-        route.call();
-      } else {
-        setState(() => loading = false);
+      setState(() => loading = true);
+      try {
+        dynamic result = await AuthenticationController()
+            .registerWithMailPass(name, phone, mail, pass);
+        if (result != null) {
+          await UserSharedPreferences.setUid(
+              result.then((value) => value ? null : snackbar.call()));
+          await UserSharedPreferences.setLoggedIn(true)
+              .then((value) => value ? null : snackbar.call());
+          loading = false;
+          route.call();
+        } else {
+          setState(() => loading = false);
+          snackbar.call();
+        }
+      } catch (e) {
         snackbar.call();
       }
     }

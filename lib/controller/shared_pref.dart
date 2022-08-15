@@ -1,4 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
+import 'package:decorator/model/employee_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSharedPreferences {
@@ -7,28 +9,27 @@ class UserSharedPreferences {
   static Future init() async =>
       sharedPreferences = await SharedPreferences.getInstance();
 
-  static const _verifiedKey = "verified";
-  static const _userKey = "uid";
-  static const _enterCheck = "enterCheck";
+  static const String _loggedInKey = "loggedIn";
+  static const String _uidKey = "uid";
+  static const String _userDetailKey = "userDetail";
 
-  static Future setVerifiedOrNot(bool verified) async =>
-      await sharedPreferences!.setBool(_verifiedKey, verified);
+  static Future<bool> setLoggedIn(bool loggedInOrNot) async =>
+      await sharedPreferences!.setBool(_loggedInKey, loggedInOrNot);
 
-  static bool? getVerifiedOrNot() {
+  static bool getLoggedIn() {
     try {
-      return sharedPreferences!.getBool(_verifiedKey);
+      return sharedPreferences!.getBool(_loggedInKey) ?? false;
     } catch (e) {
       return false;
     }
   }
 
-  static Future setUser(String uid) async {
-    return await sharedPreferences!.setString(_userKey, uid);
-  }
+  static Future<bool> setUid(String uid) async =>
+      await sharedPreferences!.setString(_uidKey, uid);
 
-  static String? getUser() {
+  static String? getUid() {
     try {
-      String? user = sharedPreferences!.getString(_userKey);
+      String? user = sharedPreferences!.getString(_uidKey);
       return user != null
           ? user == "noUser"
               ? null
@@ -39,23 +40,25 @@ class UserSharedPreferences {
     }
   }
 
-  static Future setEnterCheck(
-      {bool enteredLast = false, Timestamp? time}) async {
-    return await sharedPreferences!.setStringList(_enterCheck, [
-      enteredLast.toString(),
-      time!.toDate().toString().substring(0, 10).trim()
-    ]);
-  }
+  static Future<bool> setDetailedUserData(EmployeeModel employee) async =>
+      await sharedPreferences!.setString(
+          _userDetailKey,
+          jsonEncode({
+            "name": employee.name,
+            "email": employee.email,
+            "phone": employee.phone,
+          }));
 
-  static bool? getEnterCheck({Timestamp? time}) {
+  static EmployeeModel? getDetailedUseData() {
     try {
-      final list = sharedPreferences!.getStringList(_enterCheck);
-      if (list![0].contains("true") &&
-          time!.toDate().toString().substring(0, 10).trim() == list[1]) {
-        return true;
-      } else if (list[0].contains("false") &&
-          time!.toDate().toString().substring(0, 10).trim() == list[1]) {
-        return false;
+      final String? data = sharedPreferences!.getString(_userDetailKey);
+      if (data != null) {
+        final Map<String, dynamic> decoded = jsonDecode(data);
+        return EmployeeModel(
+          name: decoded["name"],
+          email: decoded["email"],
+          phone: decoded["phone"],
+        );
       } else {
         return null;
       }
