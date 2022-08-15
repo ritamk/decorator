@@ -50,6 +50,32 @@ class DatabaseController {
     }
   }
 
+  Future<void> setOrderData(OrderModel order) async {
+    try {
+      final DocumentReference docRef = await _orderCollection.add({
+        "uid": uid,
+        "empName": order.empName,
+        "empPhone": order.empPhone,
+        "cltName": order.cltName,
+        "cltPhone": order.cltPhone,
+        "cltAddress": order.cltAddress,
+        "amount": order.amount,
+        "item": order.item,
+        "orderDate": order.orderDate,
+        "dueDate": order.dueDate,
+        "approveDate": order.approveDate,
+        "status": order.status,
+      });
+
+      await _employeeCollection.doc(uid).update({
+        "orders": FieldValue.arrayUnion([docRef.id])
+      });
+    } catch (e) {
+      print("setOrderData: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
   Stream<List<OrderModel>?> getOrderData() {
     try {
       return _orderCollection
@@ -60,6 +86,7 @@ class DatabaseController {
                 (QueryDocumentSnapshot e) => OrderModel(
                   uid: e["uid"],
                   empName: e["empName"],
+                  empPhone: e["empPhone"],
                   orderDate: e["orderDate"],
                   dueDate: e["dueDate"],
                   approveDate: e["approveDate"],
@@ -74,6 +101,51 @@ class DatabaseController {
               .toList());
     } catch (e) {
       print("getOrderData: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
+  Future<Map<String, int>> getItemCount() async {
+    try {
+      Map<String, int> map = <String, int>{};
+      final DocumentSnapshot docSnap =
+          await _adminCollection.doc("itemCount").get();
+      for (int i = 0; i < ITEMS.length; i++) {
+        map[ITEMS[i]] = docSnap["${ITEMS[i]}Total"];
+      }
+      return map;
+    } catch (e) {
+      print("getItemCount: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
+  Future<Map<String, int>> getItemRem() async {
+    try {
+      Map<String, int> map = <String, int>{};
+      final DocumentSnapshot docSnap =
+          await _adminCollection.doc("itemRem").get();
+      for (int i = 0; i < ITEMS.length; i++) {
+        map[ITEMS[i]] = docSnap["${ITEMS[i]}Rem"];
+      }
+      return map;
+    } catch (e) {
+      print("getItemRem: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
+  Future<Map<String, int>> getItemRate() async {
+    try {
+      Map<String, int> map = <String, int>{};
+      final DocumentSnapshot docSnap =
+          await _adminCollection.doc("itemRate").get();
+      for (int i = 0; i < ITEMS.length; i++) {
+        map[ITEMS[i]] = docSnap["${ITEMS[i]}Rate"];
+      }
+      return map;
+    } catch (e) {
+      print("getItemRate: ${e.toString()}");
       throw STH_WENT_WRONG;
     }
   }

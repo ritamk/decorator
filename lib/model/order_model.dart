@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrderModel {
   final String? uid;
   final String? empName;
+  final String? empPhone;
   final String? cltName;
   final String? cltPhone;
   final String? cltAddress;
@@ -16,6 +17,7 @@ class OrderModel {
   OrderModel({
     this.uid,
     this.empName,
+    this.empPhone,
     this.orderDate,
     this.dueDate,
     this.approveDate,

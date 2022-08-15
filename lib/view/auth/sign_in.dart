@@ -122,7 +122,7 @@ class _SignInPageState extends State<SignInPage> {
                         : const Text(
                             "Sign-in",
                             style:
-                                TextStyle(color: Colors.white, fontSize: 18.0),
+                                TextStyle(color: buttonTextCol, fontSize: 18.0),
                           ),
                   ),
                 ),

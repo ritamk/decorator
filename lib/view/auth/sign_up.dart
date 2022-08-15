@@ -148,8 +148,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           )
                         : const Text(
                             "Sign-up",
-                            style: TextStyle(
-                                color: CupertinoColors.white, fontSize: 18.0),
+                            style:
+                                TextStyle(color: buttonTextCol, fontSize: 18.0),
                           ),
                   ),
                 ),
@@ -187,6 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void dispose() {
     _nameFocusNode.dispose();
+    _phoneFocusNode.dispose();
     _passFocusNode.dispose();
     _mailFocusNode.dispose();
     super.dispose();
