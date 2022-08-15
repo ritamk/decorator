@@ -3,6 +3,7 @@ import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
+import 'package:decorator/shared/widget_des.dart';
 import 'package:decorator/view/home/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                // Email form field
+                // email form field
                 TextFormField(
                   decoration:
                       authTextInputDecoration("Email", Icons.mail, null),
@@ -46,16 +47,17 @@ class _SignInPageState extends State<SignInPage> {
                   validator: (val) =>
                       val!.isEmpty ? "Please enter your email" : null,
                   onChanged: (val) => mail = val,
+                  keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) =>
                       FocusScope.of(context).requestFocus(_passFocusNode),
                 ),
                 const SizedBox(height: 20.0),
-                // Password form field
+                // password form field
                 TextFormField(
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(20.0),
-                    fillColor: Colors.grey.shade300,
+                    fillColor: formFieldCol,
                     filled: true,
                     prefixIcon: const Icon(Icons.vpn_key),
                     labelText: "Password",
@@ -79,6 +81,7 @@ class _SignInPageState extends State<SignInPage> {
                   onFieldSubmitted: (val) => FocusScope.of(context).unfocus(),
                   obscureText: _hidePassword,
                 ),
+                // forgot password button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -94,6 +97,7 @@ class _SignInPageState extends State<SignInPage> {
                   ],
                 ),
                 const SizedBox(height: 40.0),
+                // sign in button
                 TextButton(
                   style: authSignInBtnStyle(),
                   onPressed: () => signInLogic(() {

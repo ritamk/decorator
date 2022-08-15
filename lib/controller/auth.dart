@@ -19,13 +19,22 @@ class AuthenticationController {
   }
 
   Future<String?> registerWithMailPass(
-      String name, String mail, String pass) async {
+      String name, String phone, String mail, String pass) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: mail, password: pass);
       User? user = userCredential.user;
 
-      await DatabaseController(uid: user!.uid).setEmployeeData(EmployeeModel());
+      if (user != null) {
+        await DatabaseController(uid: user.uid).setEmployeeData(EmployeeModel(
+          uid: user.uid,
+          name: name,
+          phone: phone,
+          email: mail,
+        ));
+      } else {
+        return null;
+      }
 
       return userCredential.user?.uid;
     } catch (e) {

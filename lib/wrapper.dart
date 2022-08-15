@@ -1,5 +1,6 @@
 import 'package:decorator/controller/auth.dart';
 import 'package:decorator/controller/shared_pref.dart';
+import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/view/auth/auth_page.dart';
 import 'package:decorator/view/home/home_page.dart';
@@ -86,12 +87,7 @@ class WrapperBody extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
-          Center(
-            child: Text(
-              "DECORATOR'S",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26.0),
-            ),
-          ),
+          Center(child: decoratorText),
           SizedBox(height: 40.0),
           Loading(white: false, rad: 14.0),
         ],

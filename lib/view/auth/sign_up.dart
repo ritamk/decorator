@@ -3,6 +3,7 @@ import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
+import 'package:decorator/shared/widget_des.dart';
 import 'package:decorator/view/home/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       val!.isEmpty ? "Please enter your name" : null,
                   onChanged: (val) => name = val,
                   maxLength: 20,
+                  keyboardType: TextInputType.name,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) =>
@@ -61,19 +63,20 @@ class _SignUpPageState extends State<SignUpPage> {
                 // phone form field
                 TextFormField(
                   decoration:
-                      authTextInputDecoration("Phone", Icons.person, null),
+                      authTextInputDecoration("Phone", Icons.phone, "+91 "),
                   focusNode: _phoneFocusNode,
                   validator: (val) =>
                       val!.isEmpty ? "Please enter your phone number" : null,
                   onChanged: (val) => phone = val,
                   maxLength: 10,
+                  keyboardType: TextInputType.phone,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) =>
                       FocusScope.of(context).requestFocus(_mailFocusNode),
                 ),
                 const SizedBox(height: 20.0),
-                // Email form field
+                // email form field
                 TextFormField(
                   decoration:
                       authTextInputDecoration("Email", Icons.mail, null),
@@ -81,16 +84,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   validator: (val) =>
                       val!.isEmpty ? "Please enter a valid email" : null,
                   onChanged: (val) => mail = val,
+                  keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) =>
                       FocusScope.of(context).requestFocus(_passFocusNode),
                 ),
                 const SizedBox(height: 20.0),
-                // Password form field
+                // password form field
                 TextFormField(
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(20.0),
-                    fillColor: Colors.grey.shade300,
+                    fillColor: formFieldCol,
                     filled: true,
                     prefixIcon: const Icon(Icons.vpn_key),
                     labelText: "Password",
@@ -116,15 +120,26 @@ class _SignUpPageState extends State<SignUpPage> {
                   obscureText: _hidePassword,
                 ),
                 const SizedBox(height: 40.0),
+                // sign up button
                 TextButton(
                   style: authSignInBtnStyle(),
-                  onPressed: () => signUpLogic(() {
-                    if (!mounted) return;
-                    Navigator.of(context).pushAndRemoveUntil(
-                        CupertinoPageRoute(
-                            builder: (builder) => const HomePage()),
-                        (route) => false);
-                  }),
+                  onPressed: () => signUpLogic(
+                    () {
+                      if (!mounted) return;
+                      Navigator.of(context).pushAndRemoveUntil(
+                          CupertinoPageRoute(
+                              builder: (context) => const HomePage()),
+                          (route) => false);
+                    },
+                    () {
+                      if (!mounted) return;
+                      commonSnackbar(
+                        "Couldn't sign-up, please try again later.\n"
+                        "Please check credentials and/or network connection.",
+                        context,
+                      );
+                    },
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: loading
@@ -146,26 +161,21 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Future<void> signUpLogic(VoidCallback route) async {
+  Future<void> signUpLogic(VoidCallback route, VoidCallback snackbar) async {
     if (_globalKey.currentState!.validate()) {
       setState(() {
         loading = true;
       });
       dynamic result = await AuthenticationController()
-          .registerWithMailPass(name, mail, pass);
+          .registerWithMailPass(name, phone, mail, pass);
       if (result != null) {
         await UserSharedPreferences.setUser(result);
         await UserSharedPreferences.setVerifiedOrNot(true);
         loading = false;
         route.call();
       } else {
-        setState(() {
-          loading = false;
-          commonSnackbar(
-            "Couldn't sign-up, please try again later.\nPlease check credentials and/or network connection.",
-            context,
-          );
-        });
+        setState(() => loading = false);
+        snackbar.call();
       }
     }
   }

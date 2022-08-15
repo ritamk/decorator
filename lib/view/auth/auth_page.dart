@@ -1,4 +1,5 @@
 import 'package:decorator/shared/constants.dart';
+import 'package:decorator/shared/widget_des.dart';
 import 'package:decorator/view/auth/sign_in.dart';
 import 'package:decorator/view/auth/sign_up.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,12 +17,7 @@ class AuthPage extends StatelessWidget {
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.all(12.0),
-              child: Center(
-                child: Text(
-                  "DECORATOR'S",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26.0),
-                ),
-              ),
+              child: Center(child: decoratorText),
             ),
             Expanded(
               child: Row(
@@ -35,7 +31,7 @@ class AuthPage extends StatelessWidget {
                     child: const Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Text(
-                        "Register",
+                        "Sign-up",
                         style: TextStyle(
                             fontSize: 17.0, fontWeight: FontWeight.bold),
                       ),
