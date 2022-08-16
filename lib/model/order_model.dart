@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderModel {
+  final String? ref;
   final String? uid;
   final String? empName;
   final String? empPhone;
@@ -8,18 +9,23 @@ class OrderModel {
   final String? cltPhone;
   final String? cltAddress;
   final Map<String, dynamic>? item;
-  final Timestamp? dueDate;
+  final Timestamp? startDate;
+  final Timestamp? endDate;
   final Timestamp? orderDate;
+  final Timestamp? editDate;
   final Timestamp? approveDate;
   final String? status;
   final String? amount;
 
   OrderModel({
+    this.ref,
     this.uid,
     this.empName,
     this.empPhone,
     this.orderDate,
-    this.dueDate,
+    this.editDate,
+    this.startDate,
+    this.endDate,
     this.approveDate,
     this.amount,
     this.cltName,

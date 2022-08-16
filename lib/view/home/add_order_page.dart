@@ -8,6 +8,7 @@ import 'package:decorator/shared/snackbar.dart';
 import 'package:decorator/shared/widget_des.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class AddOrderPage extends StatefulWidget {
   const AddOrderPage({Key? key}) : super(key: key);
@@ -19,7 +20,8 @@ class AddOrderPage extends StatefulWidget {
 class _AddOrderPageState extends State<AddOrderPage> {
   bool _loading = true;
   bool _error = false;
-  bool _itemsSelected = false;
+  bool _itemsSelected = true;
+  bool _datesSelected = true;
   bool _buttonLoading = false;
   bool _amountCalc = false;
 
@@ -45,6 +47,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
   List<String> _selectedItems = <String>[];
   List<int> _selectedItemCount = <int>[];
   int _grandTotal = 0;
+
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
@@ -197,41 +202,136 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 ),
                           const SizedBox(height: 20.0),
                           const Text(
-                            "Employee details\n",
+                            "Order dates\n",
                             textAlign: TextAlign.start,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          // employee name
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: authTextInputDecoration(
-                                "Name", Icons.person, null),
-                            focusNode: _nameFocus,
-                            validator: (val) =>
-                                val!.isEmpty ? "Please enter your name" : null,
-                            maxLength: 20,
-                            keyboardType: TextInputType.name,
-                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                            textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (val) => FocusScope.of(context)
-                                .requestFocus(_phoneFocus),
-                          ),
-                          const SizedBox(height: 10.0),
-                          // employee phone number
-                          TextFormField(
-                            controller: _phoneController,
-                            decoration: authTextInputDecoration(
-                                "Phone", Icons.phone, "+91 "),
-                            focusNode: _phoneFocus,
-                            validator: (val) => val!.isEmpty
-                                ? "Please enter your number"
-                                : null,
-                            maxLength: 10,
-                            keyboardType: TextInputType.phone,
-                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                            textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (val) => FocusScope.of(context)
-                                .requestFocus(_cltNameFocus),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              _startDate != null
+                                  ? InkWell(
+                                      onTap: () => datePicker(context, true)
+                                          .then((value) => value != null
+                                              ? setState(
+                                                  () => _startDate = value)
+                                              : null),
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(12.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: formFieldCol,
+                                        ),
+                                        child: Row(
+                                          children: <Widget>[
+                                            const Text(
+                                              "Start Date: \t",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              DateFormat("dd/MM/yyyy, E")
+                                                  .format(_startDate!),
+                                              style: const TextStyle(
+                                                  fontSize: 16.0),
+                                            ),
+                                            const Expanded(
+                                              child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Icon(Icons.edit,
+                                                    color: Colors.black45),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : TextButton(
+                                      style: authSignInBtnStyle(),
+                                      onPressed: () => datePicker(context, true)
+                                          .then((value) => value != null
+                                              ? setState(
+                                                  () => _startDate = value)
+                                              : null),
+                                      child: Row(
+                                        children: const <Widget>[
+                                          Icon(Icons.date_range),
+                                          SizedBox(width: 10.0),
+                                          Text("Select start date",
+                                              style: TextStyle(fontSize: 15.0)),
+                                        ],
+                                      ),
+                                    ),
+                              const SizedBox(height: 10.0),
+                              _endDate != null
+                                  ? InkWell(
+                                      onTap: () => datePicker(context, false)
+                                          .then((value) => value != null
+                                              ? setState(() => _endDate = value)
+                                              : null),
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(12.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: formFieldCol,
+                                        ),
+                                        child: Row(
+                                          children: <Widget>[
+                                            const Text(
+                                              "End Date: \t",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              DateFormat("dd/MM/yyyy, E")
+                                                  .format(_endDate!),
+                                              style: const TextStyle(
+                                                  fontSize: 16.0),
+                                            ),
+                                            const Expanded(
+                                              child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Icon(Icons.edit,
+                                                    color: Colors.black45),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : TextButton(
+                                      style: authSignInBtnStyle(),
+                                      onPressed: () => datePicker(
+                                              context, false)
+                                          .then((value) => value != null
+                                              ? setState(() => _endDate = value)
+                                              : null),
+                                      child: Row(
+                                        children: const <Widget>[
+                                          Icon(Icons.date_range),
+                                          SizedBox(width: 10.0),
+                                          Text("Select end date",
+                                              style: TextStyle(fontSize: 15.0)),
+                                        ],
+                                      ),
+                                    ),
+                              const SizedBox(height: 5.0),
+                              _datesSelected
+                                  ? const SizedBox(height: 0.0, width: 0.0)
+                                  : const Text(
+                                      "Please select both the dates correctly",
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.red),
+                                    ),
+                            ],
                           ),
                           const SizedBox(height: 20.0),
                           const Text(
@@ -288,6 +388,44 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             onFieldSubmitted: (val) =>
                                 FocusScope.of(context).unfocus(),
                           ),
+                          const SizedBox(height: 20.0),
+                          const Text(
+                            "Employee details\n",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          // employee name
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: authTextInputDecoration(
+                                "Name", Icons.person, null),
+                            focusNode: _nameFocus,
+                            validator: (val) =>
+                                val!.isEmpty ? "Please enter your name" : null,
+                            maxLength: 20,
+                            keyboardType: TextInputType.name,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (val) => FocusScope.of(context)
+                                .requestFocus(_phoneFocus),
+                          ),
+                          const SizedBox(height: 10.0),
+                          // employee phone number
+                          TextFormField(
+                            controller: _phoneController,
+                            decoration: authTextInputDecoration(
+                                "Phone", Icons.phone, "+91 "),
+                            focusNode: _phoneFocus,
+                            validator: (val) => val!.isEmpty
+                                ? "Please enter your number"
+                                : null,
+                            maxLength: 10,
+                            keyboardType: TextInputType.phone,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (val) => FocusScope.of(context)
+                                .requestFocus(_cltNameFocus),
+                          ),
                         ],
                       ),
                     ),
@@ -317,15 +455,16 @@ class _AddOrderPageState extends State<AddOrderPage> {
           children: <Widget>[
             _amountCalc
                 ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Expanded(
-                          child: Text(
+                      const Text(
                         "Grand Total:",
                         style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             color: buttonTextCol),
-                      )),
+                      ),
+                      const SizedBox(width: 10.0),
                       Text(
                         "₹ $_grandTotal",
                         style: const TextStyle(
@@ -336,22 +475,40 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     ],
                   )
                 : const SizedBox(height: 0.0, width: 0.0),
+            SizedBox(height: _amountCalc ? 10.0 : 0.0),
             _amountCalc
-                ? const SizedBox(height: 10.0)
+                ? SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: bouncingScroll,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        for (int i = 0; i < _selectedItems.length; i++)
+                          Text(
+                            i == (_selectedItems.length - 1)
+                                ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
+                                : "${_selectedItems[i]}: ${_selectedItemCount[i]}\t\t|\t\t",
+                            style: const TextStyle(color: buttonTextCol),
+                          ),
+                      ],
+                    ),
+                  )
                 : const SizedBox(height: 0.0, width: 0.0),
+            SizedBox(height: _amountCalc ? 10.0 : 0.0),
             _amountCalc
                 ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      for (int i = 0; i < _selectedItems.length; i++)
-                        Text(
-                          "${_selectedItems[i]}: ${_selectedItemCount[i]}",
-                          style: const TextStyle(color: buttonTextCol),
-                        ),
+                      Text(DateFormat("dd/MM/yyyy").format(_startDate!),
+                          style: const TextStyle(color: buttonTextCol)),
+                      const Text("\t\t\t-\t\t\t",
+                          style: TextStyle(color: buttonTextCol)),
+                      Text(DateFormat("dd/MM/yyyy").format(_endDate!),
+                          style: const TextStyle(color: buttonTextCol))
                     ],
                   )
                 : const SizedBox(height: 0.0, width: 0.0),
-            const SizedBox(height: 10.0),
+            SizedBox(height: _amountCalc ? 5.0 : 0.0),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
@@ -381,8 +538,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
                       ? const Loading(white: false)
                       : Text(
                           _amountCalc ? "Add Order Request" : "Calculate Costs",
-                          style:
-                              const TextStyle(color: buttonCol, fontSize: 16.0),
+                          style: const TextStyle(
+                              color: buttonCol,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold),
                         ),
                 ),
               ),
@@ -393,8 +552,27 @@ class _AddOrderPageState extends State<AddOrderPage> {
     );
   }
 
+  Future<DateTime?> datePicker(BuildContext context, bool start) {
+    final DateTime now = start
+        ? _startDate ?? DateTime.now()
+        : _endDate ?? _startDate ?? DateTime.now();
+
+    final DateTime firstDate =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+    return showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: start ? firstDate : _startDate ?? firstDate,
+      lastDate: DateTime(DateTime.now().year + 2),
+    );
+  }
+
   Future<void> orderLogic(VoidCallback route, VoidCallback snackbar) async {
-    if (_formKey.currentState!.validate() && _selectedItems.isNotEmpty) {
+    if (_formKey.currentState!.validate() &&
+        _selectedItems.isNotEmpty &&
+        _startDate != null &&
+        _endDate != null) {
       if (_amountCalc) {
         try {
           setState(() => _buttonLoading = true);
@@ -409,6 +587,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
             item: Map.fromIterables(_selectedItems, _selectedItemCount),
             status: STATUSES[0],
             orderDate: Timestamp.now(),
+            startDate: Timestamp.fromDate(_startDate!),
+            endDate: Timestamp.fromDate(_endDate!),
           ));
           route.call();
         } catch (e) {
@@ -423,8 +603,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
         _amountCalc = true;
         setState(() {});
       }
-    } else if (_selectedItems.isEmpty) {
+    }
+    if (_selectedItems.isEmpty) {
       setState(() => _itemsSelected = false);
+    }
+    if (_startDate == null || _endDate == null) {
+      setState(() => _datesSelected = false);
     }
   }
 

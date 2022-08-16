@@ -3,6 +3,7 @@ import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/model/employee_model.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
+import 'package:decorator/view/extras/profile.dart';
 import 'package:decorator/wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +26,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
         children: <Widget>[
           DrawerHeader(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
                   UserSharedPreferences.getDetailedUseData()!.name!,
-                  style: const TextStyle(color: buttonTextCol),
+                  style: const TextStyle(
+                      color: buttonTextCol,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 10.0),
                 Text(
                   UserSharedPreferences.getDetailedUseData()!.phone!,
                   style: const TextStyle(color: buttonTextCol),
@@ -42,6 +48,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ],
             ),
           ),
+          const Divider(),
+          ListTile(
+              textColor: buttonTextCol,
+              iconColor: buttonTextCol,
+              trailing: const Icon(Icons.person),
+              title: !_signingOut
+                  ? const Text("\tProfile Page")
+                  : const Loading(white: true),
+              onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => const ProfilePage()))),
           Expanded(
               child: Align(
             alignment: Alignment.bottomCenter,

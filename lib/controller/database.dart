@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decorator/model/employee_model.dart';
 import 'package:decorator/model/order_model.dart';
@@ -37,6 +35,18 @@ class DatabaseController {
     }
   }
 
+  Future<void> editEmployeeData(EmployeeModel employee) async {
+    try {
+      await _employeeCollection.doc(uid).update({
+        "name": employee.name,
+        "phone": employee.phone,
+      });
+    } catch (e) {
+      print("editEmployeeData: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
   Future<EmployeeModel?> getEmployeeData() async {
     try {
       final DocumentSnapshot docSnap = await _employeeCollection.doc(uid).get();
@@ -55,6 +65,7 @@ class DatabaseController {
   Future<void> setOrderData(OrderModel order) async {
     try {
       final DocumentReference docRef = await _orderCollection.add({
+        "ref": order.ref,
         "uid": uid,
         "empName": order.empName,
         "empPhone": order.empPhone,
@@ -64,16 +75,43 @@ class DatabaseController {
         "amount": order.amount,
         "item": order.item,
         "orderDate": order.orderDate,
-        "dueDate": order.dueDate,
+        "editDate": order.editDate,
+        "startDate": order.startDate,
+        "endDate": order.endDate,
         "approveDate": order.approveDate,
         "status": order.status,
       });
+
+      await _orderCollection.doc(docRef.id).update({"ref": docRef.id});
 
       await _employeeCollection.doc(uid).update({
         "orders": FieldValue.arrayUnion([docRef.id])
       });
     } catch (e) {
       print("setOrderData: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
+  Future<void> editOrderData(OrderModel order) async {
+    try {
+      await _orderCollection.doc(order.ref).update({
+        "empName": order.empName,
+        "empPhone": order.empPhone,
+        "cltName": order.cltName,
+        "cltPhone": order.cltPhone,
+        "cltAddress": order.cltAddress,
+        "amount": order.amount,
+        "item": order.item,
+        "orderDate": order.orderDate,
+        "editDate": order.editDate,
+        "startDate": order.startDate,
+        "endDate": order.endDate,
+        "approveDate": order.approveDate,
+        "status": order.status,
+      });
+    } catch (e) {
+      print("editOrderData: ${e.toString()}");
       throw STH_WENT_WRONG;
     }
   }
@@ -85,11 +123,14 @@ class DatabaseController {
       return docSnap.docs
           .map(
             (QueryDocumentSnapshot e) => OrderModel(
+              ref: e["ref"],
               uid: e["uid"],
               empName: e["empName"],
               empPhone: e["empPhone"],
               orderDate: e["orderDate"],
-              dueDate: e["dueDate"],
+              editDate: e["editDate"],
+              startDate: e["startDate"],
+              endDate: e["endDate"],
               approveDate: e["approveDate"],
               amount: e["amount"],
               cltName: e["cltName"],
@@ -151,23 +192,3 @@ class DatabaseController {
     }
   }
 }
-
-
-/*
-.map(
-                (QueryDocumentSnapshot e) => OrderModel(
-                  uid: e["uid"],
-                  empName: e["empName"],
-                  empPhone: e["empPhone"],
-                  orderDate: e["orderDate"],
-                  dueDate: e["dueDate"],
-                  approveDate: e["approveDate"],
-                  amount: e["amount"],
-                  cltName: e["cltName"],
-                  cltAddress: e["cltAddress"],
-                  cltPhone: e["cltPhone"],
-                  item: e["item"],
-                  status: e["status"],
-                ),
-              )
-*/

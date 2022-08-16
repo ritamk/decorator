@@ -12,49 +12,52 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Center(child: decoratorText),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                        CupertinoPageRoute(
-                            builder: (builder) => const SignUpPage())),
-                    style: authSignInBtnStyle(),
-                    child: const Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        "Sign-up",
-                        style: TextStyle(
-                            fontSize: 17.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                        CupertinoPageRoute(
-                            builder: (builder) => const SignInPage())),
-                    style: authSignInBtnStyle(),
-                    child: const Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        "Sign-in",
-                        style: TextStyle(
-                            fontSize: 17.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Center(child: decoratorText),
               ),
-            ),
-          ],
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                              builder: (builder) => const SignUpPage())),
+                      style: authSignInBtnStyle(),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Text(
+                          "Sign-up",
+                          style: TextStyle(
+                              fontSize: 17.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                              builder: (builder) => const SignInPage())),
+                      style: authSignInBtnStyle(),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Text(
+                          "Sign-in",
+                          style: TextStyle(
+                              fontSize: 17.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

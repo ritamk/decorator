@@ -1,4 +1,5 @@
 import 'package:decorator/controller/database.dart';
+import 'package:decorator/controller/providers.dart';
 import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/model/employee_model.dart';
 import 'package:decorator/model/order_model.dart';
@@ -9,16 +10,17 @@ import 'package:decorator/view/home/edit_order.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeList extends StatefulWidget {
+class HomeList extends ConsumerStatefulWidget {
   const HomeList({Key? key}) : super(key: key);
 
   @override
-  State<HomeList> createState() => _HomeListState();
+  ConsumerState<HomeList> createState() => _HomeListState();
 }
 
-class _HomeListState extends State<HomeList> {
+class _HomeListState extends ConsumerState<HomeList> {
   bool _loadingUserData = true;
   bool _loading = true;
   bool _error = false;
@@ -28,7 +30,14 @@ class _HomeListState extends State<HomeList> {
   @override
   void initState() {
     super.initState();
-    if (UserSharedPreferences.getDetailedUseData() != null) {
+    if (ref.read(profileUpdatedProvider.state).state) {
+      loadUserData(
+        () {
+          if (!mounted) return;
+          commonSnackbar("Could not load user data", context);
+        },
+      ).whenComplete(() => setState(() => _loadingUserData = false));
+    } else if (UserSharedPreferences.getDetailedUseData() != null) {
       setState(() => _loadingUserData = false);
     } else {
       loadUserData(
@@ -47,7 +56,11 @@ class _HomeListState extends State<HomeList> {
           .getOrderData()
           .then((value) => value != null
               ? _orderList = value
-              : setState(() => _error = true));
+              : setState(() => _error = true))
+          .timeout(
+            const Duration(seconds: 20),
+            onTimeout: () => setState(() => _error = true),
+          );
     } catch (e) {
       try {
         await DatabaseController(uid: UserSharedPreferences.getUid())
@@ -78,61 +91,84 @@ class _HomeListState extends State<HomeList> {
           onRefresh: () async => await loadOrderData(),
         ),
         SliverToBoxAdapter(
-          child: Padding(
-            padding: pagePadding,
-            child: !_loading && !_loadingUserData
-                ? !_error
-                    ? ListView.builder(
-                        primary: false,
-                        shrinkWrap: true,
-                        itemCount: _orderList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0)),
-                            child: ListTile(
-                              onTap: () {
-                                Navigator.of(context).push(CupertinoPageRoute(
-                                    builder: (context) => EditOrderPage(
-                                        order: _orderList[index])));
-                              },
-                              title: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(_orderList[index].cltName!,
-                                      style: const TextStyle(fontSize: 20.0)),
-                                  const SizedBox(width: 10.0),
-                                  Tooltip(
-                                    message: "Call client",
-                                    child: InkWell(
-                                      child: Icon(
-                                        Icons.phone,
-                                        color: Colors.green.shade600,
-                                      ),
-                                      onTap: () =>
-                                          call(_orderList[index].cltPhone!),
+          child: !_error
+              ? Padding(
+                  padding: pagePadding,
+                  child: !_loading && !_loadingUserData
+                      ? _orderList.isNotEmpty
+                          ? ListView.builder(
+                              primary: false,
+                              shrinkWrap: true,
+                              itemCount: _orderList.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(15.0)),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  EditOrderPage(
+                                                      order:
+                                                          _orderList[index])));
+                                    },
+                                    title: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(_orderList[index].cltName!,
+                                            style: const TextStyle(
+                                                fontSize: 20.0)),
+                                        const SizedBox(width: 10.0),
+                                        Tooltip(
+                                          message: "Call client",
+                                          child: InkWell(
+                                            child: Icon(
+                                              Icons.phone,
+                                              color: Colors.green.shade600,
+                                            ),
+                                            onTap: () => call(
+                                                _orderList[index].cltPhone!),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    subtitle:
+                                        Text("₹ ${_orderList[index].amount!}"),
                                   ),
+                                );
+                              },
+                              clipBehavior: Clip.none,
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 24.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const <Widget>[
+                                  Icon(Icons.cancel, color: buttonCol),
+                                  SizedBox(width: 10.0),
+                                  Text("No incomplete orders"),
                                 ],
                               ),
-                              subtitle: Text("₹ ${_orderList[index].amount!}"),
-                            ),
-                          );
-                        },
-                        clipBehavior: Clip.none,
-                      )
-                    : Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            Icon(Icons.cancel, color: buttonCol),
-                            SizedBox(width: 10.0),
-                            Text("No incomplete orders"),
-                          ],
-                        ),
-                      )
-                : const Center(child: Loading(white: false, rad: 14.0)),
-          ),
+                            )
+                      : const Center(child: Loading(white: false, rad: 14.0)),
+                )
+              : Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(Icons.error, color: Colors.red),
+                      SizedBox(width: 10.0),
+                      Text(
+                        "Something went wrong, couldn't load data\n"
+                        "Please try again later.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
         ),
       ],
     );
