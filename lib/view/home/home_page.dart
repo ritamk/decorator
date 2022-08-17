@@ -16,12 +16,11 @@ class HomePage extends StatelessWidget {
         title: const Text("Home"),
         actions: <Widget>[
           IconButton(
-              onPressed: () {
-                showCupertinoDialog(
-                  context: context,
-                  builder: (context) => const UserGuideDialog(),
-                );
-              },
+              onPressed: () => showCupertinoDialog(
+                    barrierDismissible: true,
+                    context: context,
+                    builder: (context) => const UserGuideDialog(),
+                  ),
               icon: const Icon(Icons.info)),
         ],
       ),
@@ -52,16 +51,137 @@ class UserGuideDialog extends StatelessWidget {
       title: const Text("Usage guide"),
       content: Column(
         children: <Widget>[
+          const SizedBox(height: 10.0),
           Row(
             children: <Widget>[
               const Icon(Icons.pending_actions),
-              Text(
-                "  : ${STATUSES[0]}",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[0],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text: ", order is pending any action by the admin.",
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const Flexible(
-                  child: Text(
-                      ", this means that the order is pending any action by the admin")),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.check_circle),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[2],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text: ", order has been approved but isn't active yet.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.schedule),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[1],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text: ", order has been approved and is active.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.fact_check),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[3],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text: ", order has been edited and is pending.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.rule),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[4],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text:
+                            ", admin has requested the employee to accept a modified order.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.cancel),
+              const SizedBox(width: 10.0),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: <InlineSpan>[
+                      TextSpan(
+                          text: STATUSES[5],
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const TextSpan(
+                        text: ", order has been rejected.",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ],

@@ -1,8 +1,10 @@
 import 'package:decorator/controller/auth.dart';
 import 'package:decorator/controller/shared_pref.dart';
 import 'package:decorator/model/employee_model.dart';
+import 'package:decorator/model/order_model.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
+import 'package:decorator/view/extras/completed.dart';
 import 'package:decorator/view/extras/profile.dart';
 import 'package:decorator/wrapper.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,11 +55,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
               textColor: buttonTextCol,
               iconColor: buttonTextCol,
               trailing: const Icon(Icons.person),
-              title: !_signingOut
-                  ? const Text("    Profile Page")
-                  : const Loading(white: true),
+              title: const Text("    Profile Page"),
               onTap: () => Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => const ProfilePage()))),
+          ListTile(
+              textColor: buttonTextCol,
+              iconColor: buttonTextCol,
+              trailing: const Icon(Icons.done),
+              title: const Text("    Completed Orders Page"),
+              onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => const CompletedOrdersPage()))),
           Expanded(
               child: Align(
             alignment: Alignment.bottomCenter,

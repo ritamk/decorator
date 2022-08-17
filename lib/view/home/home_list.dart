@@ -31,14 +31,7 @@ class _HomeListState extends ConsumerState<HomeList> {
   @override
   void initState() {
     super.initState();
-    if (ref.read(profileUpdatedProvider.state).state) {
-      loadUserData(
-        () {
-          if (!mounted) return;
-          commonSnackbar("Could not load user data", context);
-        },
-      ).whenComplete(() => setState(() => _loadingUserData = false));
-    } else if (UserSharedPreferences.getDetailedUseData() != null) {
+    if (UserSharedPreferences.getDetailedUseData() != null) {
       setState(() => _loadingUserData = false);
     } else {
       loadUserData(

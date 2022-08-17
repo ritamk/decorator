@@ -22,10 +22,10 @@ class OrderTile extends StatelessWidget {
           message: STATUSES[0],
           child: const Icon(Icons.pending_actions, size: 32.0)),
       Tooltip(
-          message: STATUSES[1], child: const Icon(Icons.schedule, size: 32.0)),
-      Tooltip(
           message: STATUSES[2],
           child: const Icon(Icons.check_circle, size: 32.0)),
+      Tooltip(
+          message: STATUSES[1], child: const Icon(Icons.schedule, size: 32.0)),
       Tooltip(
           message: STATUSES[3],
           child: const Icon(Icons.fact_check, size: 32.0)),

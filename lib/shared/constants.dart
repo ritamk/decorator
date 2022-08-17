@@ -15,8 +15,8 @@ const List<String> ITEMS = <String>[
 
 const List<String> STATUSES = <String>[
   "Pending",
-  "Ongoing",
   "Approved",
+  "Ongoing",
   "Edited",
   "Edit Requested",
   "Rejected",

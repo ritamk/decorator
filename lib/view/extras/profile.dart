@@ -108,8 +108,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               phone: _phoneController.text,
                             ))
                                 .whenComplete(() {
-                              ref.read(profileUpdatedProvider.state).state =
-                                  true;
+                              UserSharedPreferences.setDetailedUserData(
+                                  EmployeeModel(
+                                      uid: UserSharedPreferences.getUid(),
+                                      name: _nameController.text,
+                                      phone: _phoneController.text,
+                                      email: _emailController.text));
                               commonSnackbar(
                                   "Updated data successfully", context);
                             });
