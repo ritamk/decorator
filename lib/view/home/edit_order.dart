@@ -6,6 +6,7 @@ import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
 import 'package:decorator/shared/widget_des.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +27,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   bool _itemsSelected = true;
   bool _buttonLoading = false;
   bool _amountCalc = false;
+  bool _deleting = false;
 
   final ScrollController _controller = ScrollController();
 
@@ -84,6 +86,29 @@ class _EditOrderPageState extends State<EditOrderPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Order"),
+        actions: <Widget>[
+          !_deleting
+              ? IconButton(
+                  tooltip: "Delete order",
+                  onPressed: () => deleteOrder(
+                        () {
+                          if (!mounted) return;
+                          commonSnackbar("Order deletion successful", context);
+                        },
+                        () {
+                          if (!mounted) return;
+                          commonSnackbar(
+                              "Couldn't delete order, please try again later",
+                              context);
+                        },
+                        () {
+                          if (!mounted) return;
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                  icon: const Icon(Icons.delete))
+              : const Loading(white: true),
+        ],
       ),
       body: !_error
           ? !_loading
@@ -540,6 +565,59 @@ class _EditOrderPageState extends State<EditOrderPage> {
         ),
       ),
     );
+  }
+
+  Future<void> deleteOrder(VoidCallback succSnack, VoidCallback failSnack,
+      VoidCallback route) async {
+    bool sure = false;
+
+    await showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text("Delete this order?"),
+        content: Row(
+          children: const <Widget>[
+            Icon(Icons.error, color: Colors.red),
+            SizedBox(width: 10.0),
+            Flexible(
+              child: Text(
+                  "Are you sure you wish to delete this order?\n"
+                  "This action is permanent and irreversible",
+                  style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            child: const Text("Yes"),
+            onPressed: () {
+              sure = true;
+              route.call();
+            },
+          ),
+          CupertinoDialogAction(
+            child: const Text("No"),
+            onPressed: () {
+              sure = false;
+              route.call();
+            },
+          ),
+        ],
+      ),
+    );
+
+    if (sure) {
+      try {
+        setState(() => _deleting = true);
+        await DatabaseController(uid: UserSharedPreferences.getUid())
+            .deleteOrderData(_order.ref!)
+            .whenComplete(() => succSnack.call());
+        route.call();
+      } catch (e) {
+        setState(() => _deleting = false);
+        failSnack.call();
+      }
+    }
   }
 
   Future<DateTime?> datePicker(BuildContext context, bool start) {

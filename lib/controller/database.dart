@@ -149,6 +149,18 @@ class DatabaseController {
     }
   }
 
+  Future<void> deleteOrderData(String ref) async {
+    try {
+      await _orderCollection.doc(ref).delete();
+      await _employeeCollection.doc(uid).update({
+        "orders": FieldValue.arrayRemove([ref]),
+      });
+    } catch (e) {
+      print("deleteOrderData: ${e.toString()}");
+      throw STH_WENT_WRONG;
+    }
+  }
+
   Future<Map<String, int>> getItemCount() async {
     try {
       Map<String, int> map = <String, int>{};

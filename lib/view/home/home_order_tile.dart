@@ -18,12 +18,20 @@ class OrderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> statusIcon = <Widget>[
-      const Icon(Icons.pending_actions, size: 32.0),
-      const Icon(Icons.schedule, size: 32.0),
-      const Icon(Icons.check_circle, size: 32.0),
-      const Icon(Icons.fact_check, size: 32.0),
-      const Icon(Icons.rule, size: 32.0),
-      const Icon(Icons.cancel, size: 32.0),
+      Tooltip(
+          message: STATUSES[0],
+          child: const Icon(Icons.pending_actions, size: 32.0)),
+      Tooltip(
+          message: STATUSES[1], child: const Icon(Icons.schedule, size: 32.0)),
+      Tooltip(
+          message: STATUSES[2],
+          child: const Icon(Icons.check_circle, size: 32.0)),
+      Tooltip(
+          message: STATUSES[3],
+          child: const Icon(Icons.fact_check, size: 32.0)),
+      Tooltip(message: STATUSES[4], child: const Icon(Icons.rule, size: 32.0)),
+      Tooltip(
+          message: STATUSES[5], child: const Icon(Icons.cancel, size: 32.0)),
     ];
 
     return Card(
@@ -40,21 +48,27 @@ class OrderTile extends StatelessWidget {
                 statusIcon[
                     STATUSES.indexWhere((element) => element == order.status)],
                 const SizedBox(width: 10.0),
-                Flexible(
-                  child: Text(
-                    order.cltName!,
-                    style: const TextStyle(
-                        fontSize: 16.0, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 10.0),
                 Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () => cltCall.call(),
-                      child: const Icon(Icons.phone,
-                          size: 28.0, color: Colors.green),
+                  child: InkWell(
+                    onTap: () => cltCall.call(),
+                    child: Row(
+                      children: <Widget>[
+                        Flexible(
+                          child: Text(
+                            order.cltName!,
+                            style: const TextStyle(
+                                fontSize: 18.0, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        const Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.phone,
+                                size: 28.0, color: Colors.green),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -106,7 +120,7 @@ class OrderTile extends StatelessWidget {
                           : const SizedBox(height: 0.0, width: 0.0),
                       Text(
                           "\n${DateFormat("dd/MM/yyyy").format((order.startDate!.toDate()))}\n"
-                          "~ to ~\n"
+                          "- to -\n"
                           "${DateFormat("dd/MM/yyyy").format((order.endDate!.toDate()))}",
                           textAlign: TextAlign.center),
                     ],
@@ -119,22 +133,28 @@ class OrderTile extends StatelessWidget {
             const SizedBox(height: 10.0),
             Row(
               children: <Widget>[
-                Text(order.empName!),
-                const SizedBox(width: 5.0),
-                InkWell(
-                  onTap: () => empCall.call(),
-                  child:
-                      const Icon(Icons.phone, size: 18.0, color: Colors.green),
-                ),
                 Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: order.approveDate != null
-                        ? Text(
-                            "approved: ${DateFormat("dd/MM/yyyy").format((order.startDate!.toDate()))}")
-                        : const SizedBox(height: 0.0, width: 0.0),
+                  child: InkWell(
+                    onTap: () => empCall.call(),
+                    child: Row(
+                      children: <Widget>[
+                        Flexible(
+                            child: Text(
+                          order.empName!,
+                          style: const TextStyle(fontSize: 18.0),
+                        )),
+                        const SizedBox(width: 10.0),
+                        const Icon(Icons.phone,
+                            size: 28.0, color: Colors.green),
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(width: 10.0),
+                order.approveDate != null
+                    ? Text(
+                        "approved: ${DateFormat("dd/MM/yyyy").format((order.approveDate!.toDate()))}")
+                    : const SizedBox(height: 0.0, width: 0.0),
               ],
             ),
           ],
