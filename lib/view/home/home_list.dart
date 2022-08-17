@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decorator/controller/database.dart';
 import 'package:decorator/controller/providers.dart';
 import 'package:decorator/controller/shared_pref.dart';
@@ -7,14 +6,12 @@ import 'package:decorator/model/order_model.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
-import 'package:decorator/shared/widget_des.dart';
 import 'package:decorator/view/home/edit_order.dart';
 import 'package:decorator/view/home/home_order_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeList extends ConsumerStatefulWidget {
