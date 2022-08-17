@@ -25,7 +25,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   bool _error = false;
   bool _itemsSelected = true;
   bool _buttonLoading = false;
-  bool _amountCalc = true;
+  bool _amountCalc = false;
 
   final ScrollController _controller = ScrollController();
 
@@ -137,9 +137,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                             errorBorder: textFieldBorder(),
                                           ),
                                           keyboardType: TextInputType.number,
-                                          onChanged: (value) =>
-                                              _selectedItemCount[index] =
-                                                  int.parse(value),
+                                          onChanged: (value) {
+                                            _selectedItemCount[index] =
+                                                int.parse(value);
+                                            _amountCalc
+                                                ? setState(
+                                                    () => _amountCalc = false)
+                                                : null;
+                                          },
                                         ),
                                       ),
                                       const SizedBox(width: 5.0),
@@ -322,6 +327,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltPhoneFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // client phone number
@@ -339,6 +347,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltAddressFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // client address
@@ -355,6 +366,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (val) =>
                                 FocusScope.of(context).unfocus(),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 20.0),
                           const Text(
@@ -376,6 +390,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_phoneFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // employee phone number
@@ -393,6 +410,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltNameFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                         ],
                       ),
@@ -505,7 +525,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                   child: _buttonLoading
                       ? const Loading(white: false)
                       : Text(
-                          _amountCalc ? "Add Order Request" : "Calculate Costs",
+                          _amountCalc
+                              ? "Edit Order Request"
+                              : "Calculate Costs",
                           style: const TextStyle(
                               color: buttonCol,
                               fontSize: 16.0,
@@ -521,6 +543,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Future<DateTime?> datePicker(BuildContext context, bool start) {
+    _amountCalc ? setState(() => _amountCalc = false) : null;
+
     final DateTime firstDate =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
@@ -557,6 +581,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
           snackbar.call();
         }
       } else {
+        _grandTotal = 0;
         for (int i = 0; i < _selectedItems.length; i++) {
           _grandTotal +=
               _selectedItemCount[i] * rateMap[_selectedItems[i]]!.toInt();

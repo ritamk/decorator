@@ -82,10 +82,12 @@ class DatabaseController {
         "status": order.status,
       });
 
-      await _orderCollection.doc(docRef.id).update({"ref": docRef.id});
+      await _orderCollection.doc(docRef.id).update({
+        "ref": docRef.id,
+      });
 
       await _employeeCollection.doc(uid).update({
-        "orders": FieldValue.arrayUnion([docRef.id])
+        "orders": FieldValue.arrayUnion([docRef.id]),
       });
     } catch (e) {
       print("setOrderData: ${e.toString()}");
@@ -95,6 +97,7 @@ class DatabaseController {
 
   Future<void> editOrderData(OrderModel order) async {
     try {
+      print(order.ref);
       await _orderCollection.doc(order.ref).update({
         "empName": order.empName,
         "empPhone": order.empPhone,

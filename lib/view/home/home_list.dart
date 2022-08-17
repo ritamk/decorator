@@ -55,7 +55,7 @@ class _HomeListState extends ConsumerState<HomeList> {
       await DatabaseController(uid: UserSharedPreferences.getUid())
           .getOrderData()
           .then((value) => value != null
-              ? _orderList = value
+              ? setState(() => _orderList = value)
               : setState(() => _error = true))
           .timeout(
             const Duration(seconds: 20),

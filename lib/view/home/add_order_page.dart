@@ -120,9 +120,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                             errorBorder: textFieldBorder(),
                                           ),
                                           keyboardType: TextInputType.number,
-                                          onChanged: (value) =>
-                                              _selectedItemCount[index] =
-                                                  int.parse(value),
+                                          onChanged: (value) {
+                                            _selectedItemCount[index] =
+                                                int.parse(value);
+                                            _amountCalc
+                                                ? setState(
+                                                    () => _amountCalc = false)
+                                                : null;
+                                          },
                                         ),
                                       ),
                                       const SizedBox(width: 5.0),
@@ -212,10 +217,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                               _startDate != null
                                   ? InkWell(
                                       onTap: () => datePicker(context, true)
-                                          .then((value) => value != null
-                                              ? setState(
-                                                  () => _startDate = value)
-                                              : null),
+                                          .then((value) => setState(
+                                              () => _startDate = value)),
                                       child: Container(
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(12.0),
@@ -253,10 +256,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                   : TextButton(
                                       style: authSignInBtnStyle(),
                                       onPressed: () => datePicker(context, true)
-                                          .then((value) => value != null
-                                              ? setState(
-                                                  () => _startDate = value)
-                                              : null),
+                                          .then((value) => setState(
+                                              () => _startDate = value)),
                                       child: Row(
                                         children: const <Widget>[
                                           Icon(Icons.date_range),
@@ -270,9 +271,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                               _endDate != null
                                   ? InkWell(
                                       onTap: () => datePicker(context, false)
-                                          .then((value) => value != null
-                                              ? setState(() => _endDate = value)
-                                              : null),
+                                          .then((value) =>
+                                              setState(() => _endDate = value)),
                                       child: Container(
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(12.0),
@@ -311,9 +311,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                       style: authSignInBtnStyle(),
                                       onPressed: () => datePicker(
                                               context, false)
-                                          .then((value) => value != null
-                                              ? setState(() => _endDate = value)
-                                              : null),
+                                          .then((value) =>
+                                              setState(() => _endDate = value)),
                                       child: Row(
                                         children: const <Widget>[
                                           Icon(Icons.date_range),
@@ -354,6 +353,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltPhoneFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // client phone number
@@ -371,6 +373,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltAddressFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // client address
@@ -387,6 +392,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (val) =>
                                 FocusScope.of(context).unfocus(),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 20.0),
                           const Text(
@@ -408,6 +416,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_phoneFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                           const SizedBox(height: 10.0),
                           // employee phone number
@@ -425,6 +436,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (val) => FocusScope.of(context)
                                 .requestFocus(_cltNameFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
                           ),
                         ],
                       ),
@@ -477,20 +491,34 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 : const SizedBox(height: 0.0, width: 0.0),
             SizedBox(height: _amountCalc ? 10.0 : 0.0),
             _amountCalc
-                ? SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: bouncingScroll,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        for (int i = 0; i < _selectedItems.length; i++)
-                          Text(
-                            i == (_selectedItems.length - 1)
-                                ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
-                                : "${_selectedItems[i]}: ${_selectedItemCount[i]}\t\t|\t\t",
-                            style: const TextStyle(color: buttonTextCol),
-                          ),
+                ? ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.black,
+                        Colors.transparent,
+                        Colors.transparent,
+                        Colors.black,
                       ],
+                      stops: [0.0, 0.04, 0.96, 1.0],
+                    ).createShader(bounds),
+                    blendMode: BlendMode.dstOut,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: bouncingScroll,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          for (int i = 0; i < _selectedItems.length; i++)
+                            Text(
+                              i == (_selectedItems.length - 1)
+                                  ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
+                                  : "${_selectedItems[i]}: ${_selectedItemCount[i]}\t\t|\t\t",
+                              style: const TextStyle(color: buttonTextCol),
+                            ),
+                        ],
+                      ),
                     ),
                   )
                 : const SizedBox(height: 0.0, width: 0.0),
@@ -553,6 +581,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   Future<DateTime?> datePicker(BuildContext context, bool start) {
+    _amountCalc ? setState(() => _amountCalc = false) : null;
+
     final DateTime now = start
         ? _startDate ?? DateTime.now()
         : _endDate ?? _startDate ?? DateTime.now();
