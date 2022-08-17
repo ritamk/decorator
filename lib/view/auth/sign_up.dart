@@ -168,8 +168,8 @@ class _SignUpPageState extends State<SignUpPage> {
         dynamic result = await AuthenticationController()
             .registerWithMailPass(name, phone, mail, pass);
         if (result != null) {
-          await UserSharedPreferences.setUid(
-              result.then((value) => value ? null : snackbar.call()));
+          await UserSharedPreferences.setUid(result)
+              .then((value) => value ? null : snackbar.call());
           await UserSharedPreferences.setLoggedIn(true)
               .then((value) => value ? null : snackbar.call());
           loading = false;

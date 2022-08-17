@@ -43,9 +43,9 @@ class AuthenticationController {
     }
   }
 
-  Future signOut() async {
+  Future<void> signOut() async {
     try {
-      return await _firebaseAuth.signOut();
+      await _firebaseAuth.signOut();
     } catch (e) {
       print("signOut: ${e.toString()}");
       throw STH_WENT_WRONG;

@@ -230,7 +230,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                         child: Row(
                                           children: <Widget>[
                                             const Text(
-                                              "Start Date: \t",
+                                              "Start Date:    ",
                                               style: TextStyle(
                                                   fontSize: 16.0,
                                                   fontWeight: FontWeight.bold),
@@ -284,7 +284,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                         child: Row(
                                           children: <Widget>[
                                             const Text(
-                                              "End Date: \t",
+                                              "End Date:    ",
                                               style: TextStyle(
                                                   fontSize: 16.0,
                                                   fontWeight: FontWeight.bold),
@@ -514,7 +514,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             Text(
                               i == (_selectedItems.length - 1)
                                   ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
-                                  : "${_selectedItems[i]}: ${_selectedItemCount[i]}\t\t|\t\t",
+                                  : "${_selectedItems[i]}: ${_selectedItemCount[i]}    |    ",
                               style: const TextStyle(color: buttonTextCol),
                             ),
                         ],
@@ -529,7 +529,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     children: <Widget>[
                       Text(DateFormat("dd/MM/yyyy").format(_startDate!),
                           style: const TextStyle(color: buttonTextCol)),
-                      const Text("\t\t\t-\t\t\t",
+                      const Text("    -    ",
                           style: TextStyle(color: buttonTextCol)),
                       Text(DateFormat("dd/MM/yyyy").format(_endDate!),
                           style: const TextStyle(color: buttonTextCol))

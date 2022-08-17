@@ -30,7 +30,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  UserSharedPreferences.getDetailedUseData()!.name!,
+                  UserSharedPreferences.getDetailedUseData()?.name ?? "",
                   style: const TextStyle(
                       color: buttonTextCol,
                       fontSize: 18.0,
@@ -38,11 +38,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ),
                 const SizedBox(height: 10.0),
                 Text(
-                  UserSharedPreferences.getDetailedUseData()!.phone!,
+                  UserSharedPreferences.getDetailedUseData()?.phone ?? "",
                   style: const TextStyle(color: buttonTextCol),
                 ),
                 Text(
-                  UserSharedPreferences.getDetailedUseData()!.email!,
+                  UserSharedPreferences.getDetailedUseData()?.email ?? "",
                   style: const TextStyle(color: buttonTextCol),
                 ),
               ],
@@ -54,7 +54,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               iconColor: buttonTextCol,
               trailing: const Icon(Icons.person),
               title: !_signingOut
-                  ? const Text("\tProfile Page")
+                  ? const Text("    Profile Page")
                   : const Loading(white: true),
               onTap: () => Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => const ProfilePage()))),
@@ -66,7 +66,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               iconColor: buttonTextCol,
               trailing: const Icon(Icons.logout),
               title: !_signingOut
-                  ? const Text("\tSign out")
+                  ? const Text("    Sign out")
                   : const Loading(white: true),
               onTap: () => signOutLogic(() {
                 if (!mounted) return;
