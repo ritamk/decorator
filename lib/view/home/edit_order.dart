@@ -538,7 +538,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
         try {
           setState(() => _buttonLoading = true);
           await DatabaseController(uid: UserSharedPreferences.getUid())
-              .setOrderData(OrderModel(
+              .editOrderData(OrderModel(
             empName: _nameController.text,
             empPhone: _phoneController.text,
             cltName: _cltNameController.text,
@@ -547,7 +547,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
             amount: _grandTotal.toString(),
             item: Map.fromIterables(_selectedItems, _selectedItemCount),
             status: STATUSES[0],
-            orderDate: Timestamp.now(),
+            editDate: Timestamp.now(),
             startDate: Timestamp.fromDate(_startDate),
             endDate: Timestamp.fromDate(_endDate),
           ));

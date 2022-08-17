@@ -103,7 +103,6 @@ class DatabaseController {
         "cltAddress": order.cltAddress,
         "amount": order.amount,
         "item": order.item,
-        "orderDate": order.orderDate,
         "editDate": order.editDate,
         "startDate": order.startDate,
         "endDate": order.endDate,
