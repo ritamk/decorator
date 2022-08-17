@@ -490,20 +490,34 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 : const SizedBox(height: 0.0, width: 0.0),
             SizedBox(height: _amountCalc ? 10.0 : 0.0),
             _amountCalc
-                ? SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: bouncingScroll,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        for (int i = 0; i < _selectedItems.length; i++)
-                          Text(
-                            i == (_selectedItems.length - 1)
-                                ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
-                                : "${_selectedItems[i]}: ${_selectedItemCount[i]}    |    ",
-                            style: const TextStyle(color: buttonTextCol),
-                          ),
+                ? ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.black,
+                        Colors.transparent,
+                        Colors.transparent,
+                        Colors.black,
                       ],
+                      stops: [0.0, 0.04, 0.96, 1.0],
+                    ).createShader(bounds),
+                    blendMode: BlendMode.dstOut,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: bouncingScroll,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          for (int i = 0; i < _selectedItems.length; i++)
+                            Text(
+                              i == (_selectedItems.length - 1)
+                                  ? "${_selectedItems[i]}: ${_selectedItemCount[i]}"
+                                  : "${_selectedItems[i]}: ${_selectedItemCount[i]}    |    ",
+                              style: const TextStyle(color: buttonTextCol),
+                            ),
+                        ],
+                      ),
                     ),
                   )
                 : const SizedBox(height: 0.0, width: 0.0),
