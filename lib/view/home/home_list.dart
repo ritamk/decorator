@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decorator/controller/database.dart';
 import 'package:decorator/controller/providers.dart';
 import 'package:decorator/controller/shared_pref.dart';
@@ -6,11 +7,14 @@ import 'package:decorator/model/order_model.dart';
 import 'package:decorator/shared/constants.dart';
 import 'package:decorator/shared/loading.dart';
 import 'package:decorator/shared/snackbar.dart';
+import 'package:decorator/shared/widget_des.dart';
 import 'package:decorator/view/home/edit_order.dart';
+import 'package:decorator/view/home/home_order_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeList extends ConsumerStatefulWidget {
@@ -101,41 +105,31 @@ class _HomeListState extends ConsumerState<HomeList> {
                               shrinkWrap: true,
                               itemCount: _orderList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(15.0)),
-                                  child: ListTile(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  EditOrderPage(
-                                                      order:
-                                                          _orderList[index])));
+                                return InkWell(
+                                  onTap: () {
+                                    (_orderList[index].status! != STATUSES[1] ||
+                                            _orderList[index].status! !=
+                                                STATUSES[1])
+                                        ? Navigator.of(context).push(
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    EditOrderPage(
+                                                        order:
+                                                            _orderList[index])))
+                                        : commonSnackbar(
+                                            "Order cannot be edited now",
+                                            context);
+                                  },
+                                  child: OrderTile(
+                                    order: _orderList[index],
+                                    cltCall: () {
+                                      if (!mounted) return;
+                                      call(_orderList[index].cltPhone!);
                                     },
-                                    title: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text(_orderList[index].cltName!,
-                                            style: const TextStyle(
-                                                fontSize: 20.0)),
-                                        const SizedBox(width: 10.0),
-                                        Tooltip(
-                                          message: "Call client",
-                                          child: InkWell(
-                                            child: Icon(
-                                              Icons.phone,
-                                              color: Colors.green.shade600,
-                                            ),
-                                            onTap: () => call(
-                                                _orderList[index].cltPhone!),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    subtitle:
-                                        Text("₹ ${_orderList[index].amount!}"),
+                                    empCall: () {
+                                      if (!mounted) return;
+                                      call(_orderList[index].empPhone!);
+                                    },
                                   ),
                                 );
                               },

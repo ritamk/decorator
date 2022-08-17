@@ -33,3 +33,11 @@ OutlineInputBorder textFieldBorder() {
     borderRadius: BorderRadius.circular(30.0),
   );
 }
+
+Widget divider(double height, double width) {
+  return Container(
+    color: Colors.black12,
+    height: height,
+    width: width,
+  );
+}
