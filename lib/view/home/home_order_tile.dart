@@ -128,6 +128,13 @@ class OrderTile extends StatelessWidget {
                 ],
               ),
             ),
+            if (order.note!.isNotEmpty) const SizedBox(height: 10.0),
+            if (order.note!.isNotEmpty) divider(2.0, double.infinity),
+            if (order.note!.isNotEmpty) const SizedBox(height: 10.0),
+            if (order.note!.isNotEmpty)
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Note: ${order.note!}")),
             const SizedBox(height: 10.0),
             divider(2.0, double.infinity),
             const SizedBox(height: 10.0),

@@ -34,12 +34,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
   final TextEditingController _cltNameController = TextEditingController();
   final TextEditingController _cltPhoneController = TextEditingController();
   final TextEditingController _cltAddressController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _cltNameFocus = FocusNode();
   final FocusNode _cltPhoneFocus = FocusNode();
   final FocusNode _cltAddressFocus = FocusNode();
+  final FocusNode _noteFocus = FocusNode();
 
   Map<String, int> countMap = <String, int>{};
   Map<String, int> rateMap = <String, int>{};
@@ -391,7 +393,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (val) =>
-                                FocusScope.of(context).unfocus(),
+                                FocusScope.of(context).requestFocus(_nameFocus),
                             onChanged: (value) => _amountCalc
                                 ? setState(() => _amountCalc = false)
                                 : null,
@@ -434,8 +436,29 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             keyboardType: TextInputType.phone,
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (val) => FocusScope.of(context)
-                                .requestFocus(_cltNameFocus),
+                            onFieldSubmitted: (val) =>
+                                FocusScope.of(context).requestFocus(_noteFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
+                          ),
+                          const SizedBox(height: 20.0),
+                          const Text(
+                            "Notes\n",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10.0),
+                          // notes
+                          TextFormField(
+                            controller: _noteController,
+                            decoration: authTextInputDecoration(
+                                "Note", Icons.note, null),
+                            focusNode: _noteFocus,
+                            maxLines: 2,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (val) =>
+                                FocusScope.of(context).unfocus(),
                             onChanged: (value) => _amountCalc
                                 ? setState(() => _amountCalc = false)
                                 : null,
@@ -619,6 +642,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
             orderDate: Timestamp.now(),
             startDate: Timestamp.fromDate(_startDate!),
             endDate: Timestamp.fromDate(_endDate!),
+            note: _noteController.text,
           ));
           route.call();
         } catch (e) {
@@ -665,6 +689,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
     _cltPhoneController.dispose();
     _cltAddressFocus.dispose();
     _cltAddressController.dispose();
+    _noteController.dispose();
+    _noteFocus.dispose();
     super.dispose();
   }
 }

@@ -38,12 +38,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
   final TextEditingController _cltNameController = TextEditingController();
   final TextEditingController _cltPhoneController = TextEditingController();
   final TextEditingController _cltAddressController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _cltNameFocus = FocusNode();
   final FocusNode _cltPhoneFocus = FocusNode();
   final FocusNode _cltAddressFocus = FocusNode();
+  final FocusNode _noteFocus = FocusNode();
 
   Map<String, int> countMap = <String, int>{};
   Map<String, int> rateMap = <String, int>{};
@@ -68,6 +70,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
     _cltNameController.text = _order.cltName ?? "";
     _cltPhoneController.text = _order.cltPhone ?? "";
     _cltAddressController.text = _order.cltAddress ?? "";
+    _noteController.text = _order.note ?? "";
     _selectedItems = _order.item?.keys.toList() ?? [];
     _selectedItemCount = _order.item?.values.toList().cast<int>() ?? <int>[];
     for (int i = 0; i < _selectedItemCount.length; i++) {
@@ -390,7 +393,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (val) =>
-                                FocusScope.of(context).unfocus(),
+                                FocusScope.of(context).requestFocus(_nameFocus),
                             onChanged: (value) => _amountCalc
                                 ? setState(() => _amountCalc = false)
                                 : null,
@@ -433,8 +436,31 @@ class _EditOrderPageState extends State<EditOrderPage> {
                             keyboardType: TextInputType.phone,
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (val) => FocusScope.of(context)
-                                .requestFocus(_cltNameFocus),
+                            onFieldSubmitted: (val) =>
+                                FocusScope.of(context).requestFocus(_noteFocus),
+                            onChanged: (value) => _amountCalc
+                                ? setState(() => _amountCalc = false)
+                                : null,
+                          ),
+                          const SizedBox(height: 20.0),
+                          const Text(
+                            "Notes\n",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10.0),
+                          // notes
+                          TextFormField(
+                            controller: _noteController,
+                            decoration: authTextInputDecoration(
+                                "Note", Icons.note, null),
+                            focusNode: _noteFocus,
+                            validator: (val) =>
+                                val!.isEmpty ? "Please enter a note" : null,
+                            maxLines: 2,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (val) =>
+                                FocusScope.of(context).unfocus(),
                             onChanged: (value) => _amountCalc
                                 ? setState(() => _amountCalc = false)
                                 : null,
@@ -667,6 +693,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
             editDate: Timestamp.now(),
             startDate: Timestamp.fromDate(_startDate),
             endDate: Timestamp.fromDate(_endDate),
+            note: _noteController.text,
           ));
           route.call();
         } catch (e) {
@@ -710,6 +737,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
     _cltPhoneController.dispose();
     _cltAddressFocus.dispose();
     _cltAddressController.dispose();
+    _noteController.dispose();
+    _noteFocus.dispose();
     for (int i = 0; i < _selectedItemController.length; i++) {
       _selectedItemController[i].dispose();
     }

@@ -80,6 +80,7 @@ class DatabaseController {
         "endDate": order.endDate,
         "approveDate": order.approveDate,
         "status": order.status,
+        "note": order.note,
       });
 
       await _orderCollection.doc(docRef.id).update({
@@ -111,6 +112,7 @@ class DatabaseController {
         "endDate": order.endDate,
         "approveDate": order.approveDate,
         "status": order.status,
+        "note": order.note,
       });
     } catch (e) {
       print("editOrderData: ${e.toString()}");
@@ -140,6 +142,7 @@ class DatabaseController {
               cltPhone: e["cltPhone"],
               item: e["item"],
               status: e["status"],
+              note: e["note"],
             ),
           )
           .toList();
