@@ -563,6 +563,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
           setState(() => _buttonLoading = true);
           await DatabaseController(uid: UserSharedPreferences.getUid())
               .editOrderData(OrderModel(
+            ref: _order.ref,
             empName: _nameController.text,
             empPhone: _phoneController.text,
             cltName: _cltNameController.text,
